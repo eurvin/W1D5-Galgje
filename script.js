@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     liveElement.innerHTML = "you have " + lives + " lives remaining";
     console.log(liveElement);
 
-    document.getElementsByClassName("guess")
+    const guess= document.getElementsByClassName("guess")
     guess.addEventListener('click', function () {
         if (/*letter zit niet in woord*/) {
             lives--;
