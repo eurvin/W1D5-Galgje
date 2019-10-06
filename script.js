@@ -4,55 +4,43 @@ document.addEventListener('DOMContentLoaded', function (event) {
   const words = ['programmeren', 'javascript', 'slack', 'tutorials', 'github',
   'samenwerken', 'studeren', 'browser', 'terminal'];
 
-  // lives
+  // create a new array of letters with a random word from words array
+  const wordArray = Array.from(words[Math.random() * words.length | 0]);
+
+  // array to store incorrectly guessed letters
+  let lettersArray = [];
+
+  // set total lives & get element to display
   let lives = 5;
   let liveElement = document.getElementById("lives");
 
-  // empty letters array
-  let lettersArray = [];
+  // array to play game with starting with underscores
+  const tryArray = wordArray.map(x => x = '_');
 
-  // select a word from words and create an array
-  const wordArray = Array.from(words[Math.random() * words.length | 0]);
-
-  // array to play game with
-  const tryArray = wordArray.map(x => x = '_ ');
-
-  // Insert letters/underscores via span elements
-  const underScoreElements = function(x) {
-    let underScore = document.querySelector('.answer h4:nth-child(2)');
-
-    // remove letters/span element if present
-    while (underScore.firstChild) {
-      underScore.removeChild(underScore.firstChild);
-    }
-
-    // Add span element with content of array items
-    tryArray.map(function(x) {
-      let span = document.createElement("SPAN");
-      span.innerHTML = `${x} `;
-      underScore.appendChild(span);
-    })
+  // Display tryArray in 2nd <h4> element
+  const letterElement = function(tryArray) {
+    document.querySelector('.answer h4:nth-child(2)').innerHTML = `${tryArray.join(' ')}`;
   };
 
-  //invoke underscores at start
-  underScoreElements(tryArray);
+  //invoke letterDisplay at start
+  letterElement(tryArray);
 
-  // Update lives element
+  // Update liveElement
   const updateLives = (lives) => {
     if(lives <= 0) {
       liveElement.innerHTML = `Game over! You have no lives remaining.
       The right word was ${wordArray.join('')}!
-      Press restart to play again!`;
+      Press the restart button to play again!`;
     } else if(lives == 'win') {
       liveElement.innerHTML = `You have won the game! Good job!
-      Press restart to play again!`;
+      Press the restart button to play again!`;
     } else {
       liveElement.innerHTML = `You have ${lives} lives remaining.
-      You have tried ${lettersArray.join(' ')}.`;
+      You have tried <b>${lettersArray.join(' ')}</b>`;
     }
   };
 
-  // Invoke lives at start
+  // Invoke lives text at start
   updateLives(lives);
 
   // Restart the Game
@@ -66,46 +54,58 @@ document.addEventListener('DOMContentLoaded', function (event) {
     livesLeft(letter)
   });
 
-
   // Check lives
   const livesLeft = function(letter) {
     if (lives > 0) {
-      guessCheck(letter);
+      checkInput(letter);
     } else {
-      updateLives(lives)
+      updateLives(lives);
+    }
+  };
+
+  // check if given input is a letter or not
+  const checkInput = function(letter) {
+    let regex = /[a-zA-Z]/;
+    regex.test(letter);
+    if (regex.test(letter) == true) {
+      checkLetter(letter);
+    } else {
+      lives--;
+      updateLives(lives);
     }
   };
 
   // check if letter is correct
-  const guessCheck = function(letter) {
+  const checkLetter = function(letter) {
     if(wordArray.includes(letter) == false) {
+
+      // subtract 1 lives + update letters on screen
       lives--;
-      lettersArray.push(letter);
-      updateLives(lives);
+      if(lettersArray.includes(letter) == false){
+        
+        lettersArray.push(letter);
+        updateLives(lives);
+      }
     } else {
-      checkLetter(letter);
+
+      // change letter in tryArray if found in wordArray
+      let i = 0;
+      tryArray.map(function(x) {
+        if(wordArray[i] == letter) {
+          tryArray[i] = letter;
+          i++;
+        } else {
+          i++;
+        }
+      })
+      letterElement(tryArray);
+      checkWin(tryArray);
     }
   };
 
-  // map letter against array items
-  const checkLetter = function(letter) {
-    let i=0;
-    tryArray.map(function(x) {
-      if(wordArray[i] == letter) {
-        tryArray[i] = letter;
-        underScoreElements(tryArray[i]);
-        i++;
-        checkWin(tryArray);
-      } else {
-        i++;
-        underScoreElements(x);
-      }
-    })
-  }
-
-  // alert player if game is won
+  // check if game is won and display message + alert
   const checkWin = function(tryArray) {
-      if (wordArray.toString() == tryArray.toString()) {
+      if (wordArray.join('') == tryArray.join('')) {
         updateLives('win');
         alert('We have a winner!');
     }
