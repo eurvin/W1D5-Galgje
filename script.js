@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
   const tryArray = wordArray.map(letter => letter = '_');
 
   // Display tryArray in 2nd <h4> element
-  const letterElement = function(tryArray) {
+  const letterDisplay = function(tryArray) {
     document.querySelector('.answer h4:nth-child(2)').innerHTML = `${tryArray.join(' ')}`;
   };
 
   //invoke letterDisplay at start
-  letterElement(tryArray);
+  letterDisplay(tryArray);
 
   // Update liveElement
   const updateLives = (lives) => {
@@ -35,6 +35,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
     } else if (lives == 'win') {
       liveElement.innerHTML = `You have won the game! Good job!
       Press the restart button to play again!`;
+      alert('We have a winner!');
+    } else if (lives == 'input') {
+      liveElement.innerHTML = `You have ${lives} lives remaining.
+      You have tried <b>${lettersArray.join(' ')}</b>`;
+      alert('Alleen letters a.u.b.!');
     } else {
       liveElement.innerHTML = `You have ${lives} lives remaining.
       You have tried <b>${lettersArray.join(' ')}</b>`;
@@ -72,8 +77,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
       checkLetter(letter);
     } else {
       lives--;
+      updateLives('input');
       updateLives(lives);
-    }
+    };
   };
 
   // check if letter is correct
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
         lettersArray.push(letter);
         updateLives(lives);
-      }
+      };
     } else {
 
       // change letter in tryArray if found in wordArray
@@ -99,17 +105,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
           i++;
         }
       })
-      letterElement(tryArray);
+      letterDisplay(tryArray);
       checkWin(tryArray);
-    }
+    };
   };
 
   // check if game is won and display message + alert
   const checkWin = function(tryArray) {
     if (wordArray.join('') == tryArray.join('')) {
       updateLives('win');
-      alert('We have a winner!');
-    }
-  }
+    };
+  };
 
 });
